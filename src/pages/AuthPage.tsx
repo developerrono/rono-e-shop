@@ -1,150 +1,227 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/pages/AuthContext'; // FIX 1: Adjusted path to '../AuthContext'
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Navbar from '../components/Navbar'; // FIX 2: Adjusted path to '../components/Navbar'
-import { Loader2, Key, Mail, UserPlus, LogIn } from 'lucide-react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
-// Define the component state type for clarity
-type AuthMode = 'login' | 'signup';
+// --- Simplified User/Auth Types for Local Storage ---
+export interface LocalUser { // EXPORTED FOR USE IN PROFILE.TSX
+  uid: string;
+  email: string;
+  isAnonymous: boolean;
+}
 
-const AuthPage = () => {
-  const [mode, setMode] = useState<AuthMode>('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { login, signup, currentUser } = useAuth(); // Get auth functions and user state
+export interface UserProfile { // EXPORTED FOR USE IN PROFILE.TSX
+  email: string;
+  displayName: string;
+  createdAt: string;
+}
 
-  // Redirect if already authenticated with a real user (not anonymous)
-  // We check if the user is authenticated AND if they are NOT anonymous
-  if (currentUser && !currentUser.isAnonymous) {
-    navigate('/profile', { replace: true });
-    return null; 
+interface AuthContextType {
+  currentUser: LocalUser | null;
+  userId: string | null;
+  isAuthReady: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  // Database/App ID fields removed as they are no longer necessary
+}
+
+// 2. CONTEXT SETUP
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// 3. CUSTOM HOOK
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
+  return context;
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+// --- Helper Functions for Local Storage Simulation ---
 
-    if (!email || !password) {
-      toast.error('Input Error', { description: 'Please fill in both email and password.' });
-      setIsLoading(false);
-      return;
-    }
+// A simple map to simulate storing "hashed" passwords/user records
+const USER_DATABASE_KEY = 'mockUserDB';
+const PROFILE_DATA_KEY_PREFIX = 'userProfile_';
 
-    try {
-      if (mode === 'login') {
-        await login(email, password);
-      } else {
-        // Simple password check for signup
-        if (password.length < 6) {
-          toast.error('Security Warning', { description: 'Password must be at least 6 characters long.' });
-          setIsLoading(false);
-          return;
+const getMockUserDB = (): Record<string, { password: string, email: string }> => {
+  const data = localStorage.getItem(USER_DATABASE_KEY);
+  return data ? JSON.parse(data) : {};
+};
+
+const saveMockUserDB = (db: Record<string, { password: string, email: string }>) => {
+  localStorage.setItem(USER_DATABASE_KEY, JSON.stringify(db));
+};
+
+export const saveProfileData = (uid: string, profile: UserProfile) => { // EXPORTED
+    localStorage.setItem(PROFILE_DATA_KEY_PREFIX + uid, JSON.stringify(profile));
+};
+
+export const getProfileData = (uid: string): UserProfile | null => { // EXPORTED
+    const data = localStorage.getItem(PROFILE_DATA_KEY_PREFIX + uid);
+    return data ? JSON.parse(data) : null;
+};
+
+// --- Profile Simulation: Create or check profile exists (for non-anonymous users) ---
+const createProfileDocument = (user: LocalUser) => {
+    if (user.isAnonymous) return;
+
+    // Check if profile already exists in local storage
+    if (getProfileData(user.uid)) return;
+
+    // Create a new profile
+    const newProfile: UserProfile = {
+        email: user.email,
+        displayName: user.email ? user.email.split('@')[0] : 'New User',
+        createdAt: new Date().toISOString(),
+    };
+    saveProfileData(user.uid, newProfile);
+    console.log("New mock user profile created for:", user.uid);
+};
+
+
+// 4. PROVIDER COMPONENT
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState<LocalUser | null>(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
+  // --- Core Authentication State Management (Local Storage Check) ---
+  useEffect(() => {
+    // Check for existing logged-in user in Local Storage
+    const storedUserJson = localStorage.getItem('currentUser');
+    
+    if (storedUserJson) {
+        try {
+            const storedUser: LocalUser = JSON.parse(storedUserJson);
+            setCurrentUser(storedUser);
+            if (!storedUser.isAnonymous) {
+                createProfileDocument(storedUser);
+            }
+        } catch (error) {
+            console.error('Error parsing stored user data:', error);
+            // Fallback to anonymous if parsing fails
+            handleAnonymousLogin();
         }
-        await signup(email, password);
-      }
-      
-      // If successful, redirect to the home page or a specific route
-      navigate('/', { replace: true });
-    } catch (error) {
-      // Error handling is done inside AuthContext, just ensure loading state is reset
-      setIsLoading(false);
+    } else {
+        // If no user is stored, start anonymously
+        handleAnonymousLogin();
+    }
+    
+    setIsAuthReady(true);
+  }, []);
+
+  const handleAnonymousLogin = () => {
+    // Generate a UUID for anonymous user
+    const anonUser: LocalUser = {
+      uid: `anon-${Math.random().toString(36).substring(2, 9)}`,
+      email: '',
+      isAnonymous: true,
+    };
+    setCurrentUser(anonUser);
+    localStorage.setItem('currentUser', JSON.stringify(anonUser));
+    toast.info('Signed in anonymously (Local Storage).');
+  };
+
+  const login = async (email: string, password: string) => {
+    // Simulate a network/API call delay
+    await new Promise(resolve => setTimeout(resolve, 500)); 
+
+    const userDB = getMockUserDB();
+    const records = Object.values(userDB);
+    const userRecord = records.find(r => r.email === email && r.password === password);
+
+    if (userRecord) {
+        // Simulate successful login
+        const loggedInUser: LocalUser = {
+            uid: userRecord.email, // Using email as mock UID for simplicity
+            email: userRecord.email,
+            isAnonymous: false,
+        };
+        setCurrentUser(loggedInUser);
+        localStorage.setItem('currentUser', JSON.stringify(loggedInUser));
+        createProfileDocument(loggedInUser); // Ensure profile exists
+        toast.success('Welcome back! Logged in successfully.');
+    } else {
+        // Simulate failed login
+        const error = new Error('Invalid email or password.');
+        console.error('Login Error:', error);
+        toast.error('Login Failed', {
+            description: error.message,
+        });
+        throw error;
     }
   };
 
-  const title = mode === 'login' ? 'Welcome Back!' : 'Create Account';
-  const description = mode === 'login' ? 
-    'Sign in to access your cart, profile, and order history.' :
-    'Join Rono E-Shop today. It only takes a minute!';
-  const submitButtonText = mode === 'login' ? 'Sign In' : 'Sign Up';
-  const submitButtonIcon = mode === 'login' ? <LogIn className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />;
-  const toggleText = mode === 'login' ? "Don't have an account?" : "Already have an account?";
-  const toggleLinkText = mode === 'login' ? 'Sign Up' : 'Log In';
+  const signup = async (email: string, password: string) => {
+    await new Promise(resolve => setTimeout(resolve, 500)); 
+
+    const userDB = getMockUserDB();
+    const isEmailTaken = Object.values(userDB).some(r => r.email === email);
+
+    if (isEmailTaken) {
+        const error = new Error('Email is already in use.');
+        console.error('Signup Error:', error);
+        toast.error('Sign Up Failed', { description: error.message });
+        throw error;
+    }
+    if (password.length < 6) {
+        const error = new Error('Password must be at least 6 characters long.');
+        toast.error('Security Warning', { description: error.message });
+        throw error;
+    }
+
+    // Simulate account creation
+    userDB[email] = { password, email }; // Use email as mock UID key
+    saveMockUserDB(userDB);
+
+    const newUser: LocalUser = {
+        uid: email,
+        email: email,
+        isAnonymous: false,
+    };
+    setCurrentUser(newUser);
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    createProfileDocument(newUser); // Create profile on sign up
+
+    toast.success('Account created and logged in!');
+  };
+
+  const logout = async () => {
+    await new Promise(resolve => setTimeout(resolve, 300)); 
+    
+    // Clear the current user data
+    localStorage.removeItem('currentUser');
+    
+    // Fallback to anonymous state
+    handleAnonymousLogin();
+    toast.info('Logged out successfully.');
+  };
+
+  const userId = currentUser?.uid || null;
+
+  const value: AuthContextType = {
+    currentUser,
+    userId,
+    isAuthReady,
+    login,
+    signup,
+    logout,
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar cartItemsCount={0} /> {/* Assuming Navbar takes cart count prop */}
-      <div className="flex flex-col items-center justify-center p-4 pt-12">
-        <Card className="w-full max-w-md shadow-2xl transition-all duration-300">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-extrabold text-primary">{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              {/* Email Input */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-              
-              {/* Password Input */}
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              {/* Submit Button */}
-              <Button 
-                type="submit" 
-                className="w-full text-lg h-10 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                ) : (
-                  submitButtonIcon
-                )}
-                {submitButtonText}
-              </Button>
-              
-              {/* Mode Toggle Link */}
-              <Button 
-                type="button" 
-                variant="link" 
-                className="text-sm text-muted-foreground hover:text-primary transition-colors p-0"
-                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                disabled={isLoading}
-              >
-                {toggleText} <span className="font-semibold ml-1">{toggleLinkText}</span>
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
-      </div>
-    </div>
+    <AuthContext.Provider value={value}>
+      {isAuthReady ? children : (
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="ml-3 text-lg text-muted-foreground">Loading authentication...</p>
+        </div>
+      )}
+    </AuthContext.Provider>
   );
 };
 
-export default AuthPage;
+// Add a default export for convenience, which often resolves generic "undefined component" errors.
+export default AuthProvider;

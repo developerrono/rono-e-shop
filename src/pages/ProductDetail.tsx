@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from './components/UI/button';
+import { Badge } from './components/UI/badge';
 import Navbar from '@/components/Navbar';
 import { ShoppingCart, Heart, ArrowLeft, Check } from 'lucide-react';
 import { ALL_PRODUCTS } from '@/lib/products';
