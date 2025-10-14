@@ -1,4 +1,14 @@
-import pantsImg from '@/assets/pants.jpg';
+import pantsImg from '../assets/pants.jpg';
+import chinoImg from '../assets/pants/chino.jpeg';
+import tailoredImg from '../assets/pants/tailored.jpeg';
+import croppedImg from '../assets/pants/cropped.jpeg';
+import denimImg from '../assets/pants/darkjeans.jpeg';
+import hybridImg from '../assets/pants/hybrid.jpeg';
+import patteredImg from '../assets/pants/pattered.jpeg';
+import pleatedImg from '../assets/pants/pleated.jpeg';
+import techflexImg from '../assets/pants/techflex.jpeg';
+import earthtoneImg from '../assets/pants/earthtone.jpeg';
+import slimdenimImg from '../assets/pants/slimdenim.jpeg';
 
 export interface Product {
   id: string;
@@ -6,7 +16,7 @@ export interface Product {
   description: string;
   price: number;
   image: string;
-  category: string;
+  category: "Men's Pants";
   badge?: string;
   details?: string;
   features?: string[];
@@ -17,9 +27,9 @@ export const pantsProducts: Product[] = [
     id: 'p1',
     name: 'Relaxed Tailored Pants',
     description: 'A modern relaxed-fit pant combining comfort and timeless tailoring.',
-    price: 79.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 2500,
+    image: tailoredImg,
+    category: 'Men\'s Pants',
     badge: 'New Arrival',
     details:
       'Comfort meets class with our Relaxed Tailored Pants — crafted with soft, breathable fabric that moves with you while maintaining a refined silhouette.',
@@ -35,9 +45,9 @@ export const pantsProducts: Product[] = [
     id: 'p2',
     name: 'Earth Tone Cotton Chinos',
     description: 'Classic chinos in rich earthy and neutral tones for everyday style.',
-    price: 69.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 2000,
+    image: earthtoneImg,
+    category: "Men's Pants",
     details:
       'Inspired by nature, our Earth Tone Cotton Chinos are the go-to pair for versatile styling — perfect for work or weekend wear.',
     features: [
@@ -52,9 +62,9 @@ export const pantsProducts: Product[] = [
     id: 'p3',
     name: 'TechFlex Performance Trousers',
     description: 'Moisture-wicking, stretchable tech-fabric trousers for active professionals.',
-    price: 89.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1800,
+    image: techflexImg,
+    category: "Men's Pants",
     badge: 'Bestseller',
     details:
       'The TechFlex Performance Trousers deliver movement freedom, breathability, and modern polish — ideal for travel and long workdays.',
@@ -70,9 +80,9 @@ export const pantsProducts: Product[] = [
     id: 'p4',
     name: 'Hybrid Drawstring Chinos',
     description: 'Smart-casual chinos featuring a drawstring waistband and sleek tailoring.',
-    price: 74.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1200,
+    image: hybridImg,
+    category: "Men's Pants",
     details:
       'Blending comfort with sophistication, these drawstring chinos provide a modern take on office and lounge wear.',
     features: [
@@ -87,9 +97,9 @@ export const pantsProducts: Product[] = [
     id: 'p5',
     name: 'Cropped Smart Pants',
     description: 'Trendy cropped pants offering breathable style for warm seasons.',
-    price: 64.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1500,
+    image: croppedImg,
+    category: "Men's Pants",
     details:
       'These cropped ankle-length pants are perfect for showing off sneakers or loafers while keeping a refined look.',
     features: [
@@ -104,9 +114,9 @@ export const pantsProducts: Product[] = [
     id: 'p6',
     name: 'Pleated Heritage Pants',
     description: 'Classic pleated trousers reimagined for today’s fashion-forward men.',
-    price: 84.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1000,
+    image: pleatedImg,
+    category: "Men's Pants",
     badge: 'Trending',
     details:
       'Pleats are back — and better. The Pleated Heritage Pants merge vintage charm with modern comfort.',
@@ -122,9 +132,9 @@ export const pantsProducts: Product[] = [
     id: 'p7',
     name: 'Patterned Textured Pants',
     description: 'Subtle patterned pants with a refined feel for casual elegance.',
-    price: 92.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1000,
+    image: patteredImg,
+    category: "Men's Pants",
     details:
       'Make a quiet statement with these textured pants featuring woven patterns that add sophistication without flash.',
     features: [
@@ -139,9 +149,9 @@ export const pantsProducts: Product[] = [
     id: 'p8',
     name: 'Classic Chino Pants',
     description: 'Timeless chinos for everyday versatility and comfort.',
-    price: 59.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1600,
+    image: chinoImg,
+    category: "Men's Pants",
     details:
       'Our Classic Chino Pants are wardrobe essentials — clean, minimal, and endlessly adaptable for any occasion.',
     features: [
@@ -156,9 +166,9 @@ export const pantsProducts: Product[] = [
     id: 'p9',
     name: 'Regular Fit Denim Jeans',
     description: 'Everyday jeans offering a classic look with durable comfort.',
-    price: 79.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1300,
+    image: denimImg,
+    category: "Men's Pants",
     badge: 'Popular',
     details:
       'Built for comfort and longevity, these regular-fit jeans offer a timeless look with a perfect blend of structure and softness.',
@@ -174,9 +184,9 @@ export const pantsProducts: Product[] = [
     id: 'p10',
     name: 'Slim-Fit Dark Wash Jeans',
     description: 'Modern slim-fit jeans with a rich dark wash finish.',
-    price: 89.99,
-    image: pantsImg,
-    category: 'Men’s Pants',
+    price: 1400,
+    image: slimdenimImg,
+    category: "Men's Pants",
     details:
       'These dark-wash jeans are your go-to for polished casual outfits — sleek, comfortable, and built to last.',
     features: [

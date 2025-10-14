@@ -1,12 +1,13 @@
-// src/lib/laptops.ts
-import hpImg from '@/assets/laptops/hp.jpg';
-import dellImg from '@/assets/laptops/dell.jpg';
-import lenovoImg from '@/assets/laptops/lenovo.jpg';
-import acerImg from '@/assets/laptops/acer.jpg';
-import appleImg from '@/assets/laptops/apple.jpg';
-import asusImg from '@/assets/laptops/asus.jpg';
-import microsoftImg from '@/assets/laptops/microsoft.jpg';
-import samsungImg from '@/assets/laptops/samsung.jpg';
+import hpImg from '../assets/laptops/hp.jpeg';
+import dellImg from '../assets/laptops/dell.jpeg';
+import lenovoImg from '../assets/laptops/lenovo.jpeg';
+import acerImg from '../assets/laptops/acer.jpeg';
+import appleImg from '../assets/laptops/apple.jpeg';
+import asusImg from '../assets/laptops/asus.jpeg';
+import microsoftImg from '../assets/laptops/microsoft.jpeg';
+import samsungImg from '../assets/laptops/samsung.jpeg';
+import omenImg from '../assets/laptops/omen.jpeg';
+import dellalienwareImg from '../assets/laptops/dellalienware.jpeg';
 
 export interface Laptop {
   id: number;
@@ -25,9 +26,9 @@ export const laptops: Laptop[] = [
     brand: 'HP',
     description:
       'High-performance gaming laptop with NVIDIA RTX graphics and a 165Hz display, ideal for gamers and creators.',
-    image: hpImg,
-    price: 1399,
-    category: 'Gaming Laptop',
+    image: omenImg,
+    price: 40500,
+    category: 'Laptops & Tech', // FIX: Changed from 'Gaming Laptop'
   },
   {
     id: 2,
@@ -36,38 +37,38 @@ export const laptops: Laptop[] = [
     description:
       'Affordable gaming laptop with Intel Core i7 and NVIDIA RTX 3050 for smooth performance.',
     image: hpImg,
-    price: 999,
-    category: 'Gaming Laptop',
+    price: 110000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Gaming Laptop'
   },
   {
     id: 3,
-    name: 'Dell Alienware M16',
+    name: 'Dell XPS 13 Plus',
     brand: 'Dell',
     description:
-      'Premium gaming powerhouse featuring top-tier GPU and advanced cooling for immersive gaming.',
+      'Premium ultrabook with a modern, seamless design and powerful Intel Evo performance.',
     image: dellImg,
-    price: 1899,
-    category: 'Gaming Laptop',
+    price: 150000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Ultrabook'
   },
   {
     id: 4,
-    name: 'Dell G15',
+    name: 'Dell Alienware m18',
     brand: 'Dell',
     description:
-      'Stylish gaming laptop with AMD Ryzen processors and solid performance for its price.',
-    image: dellImg,
-    price: 1099,
-    category: 'Gaming Laptop',
+      'Massive 18-inch gaming laptop with top-of-the-line components for desktop-level performance.',
+    image: dellalienwareImg,
+    price: 70000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Gaming Laptop'
   },
   {
     id: 5,
     name: 'Lenovo Legion 5 Pro',
     brand: 'Lenovo',
     description:
-      'Balanced gaming laptop combining performance, cooling, and build quality with a 165Hz QHD display.',
+      'Combining performance, cooling, and build quality with a 165Hz QHD display.',
     image: lenovoImg,
-    price: 1299,
-    category: 'Gaming Laptop',
+    price: 500000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Gaming Laptop'
   },
   {
     id: 6,
@@ -76,8 +77,8 @@ export const laptops: Laptop[] = [
     description:
       'Aggressive design with high-end hardware for gamers demanding maximum frame rates.',
     image: acerImg,
-    price: 1499,
-    category: 'Gaming Laptop',
+    price: 125000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Gaming Laptop'
   },
   {
     id: 7,
@@ -86,8 +87,8 @@ export const laptops: Laptop[] = [
     description:
       'Ultra-efficient and powerful laptop for creative professionals, featuring the Apple M3 chip.',
     image: appleImg,
-    price: 1999,
-    category: 'Professional Laptop',
+    price: 250000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Professional Laptop'
   },
   {
     id: 8,
@@ -96,8 +97,8 @@ export const laptops: Laptop[] = [
     description:
       'Compact gaming laptop with exceptional battery life and top-tier AMD Ryzen performance.',
     image: asusImg,
-    price: 1599,
-    category: 'Gaming Laptop',
+    price: 140000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Gaming Laptop'
   },
   {
     id: 9,
@@ -106,8 +107,8 @@ export const laptops: Laptop[] = [
     description:
       'Elegant and portable laptop with vibrant touchscreen, great for work and study.',
     image: microsoftImg,
-    price: 1199,
-    category: 'Ultrabook',
+    price: 120000,
+    category: 'Laptops & Tech', // FIX: Changed from 'Ultrabook'
   },
   {
     id: 10,
@@ -116,7 +117,7 @@ export const laptops: Laptop[] = [
     description:
       'Sleek ultrabook with AMOLED display and great integration with Galaxy devices.',
     image: samsungImg,
-    price: 1299,
-    category: 'Ultrabook',
+    price: 129999,
+    category: 'Laptops & Tech', // FIX: Changed from 'Ultrabook'
   },
 ];

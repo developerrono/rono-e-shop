@@ -1,4 +1,15 @@
-import perfumeImg from '@/assets/perfume.jpg';
+import perfumeImg from '../assets/perfume.jpg';
+import azzaroImg from '../assets/perfume/azzaro.jpeg';
+import bvlgariImg from '../assets/perfume/bvlgari.jpeg';
+import dunhillImg from '../assets/perfume/dunhill.jpeg';
+import davidoffImg from '../assets/perfume/davidoff.jpeg';
+import giorgioImg from '../assets/perfume/giorgio.jpeg';
+import hermesImg from '../assets/perfume/hermes.jpeg';
+import isseyImg from '../assets/perfume/issey.jpeg';
+import davidoffwomanImg from '../assets/perfume/davidoffwoman.jpeg';
+import giorgiosiImg from '../assets/perfume/giorgiosi.jpeg';
+import pacoImg from '../assets/perfume/paco.jpeg';
+import omniaImg from '../assets/perfume/omnia.jpeg';
 
 export interface Product {
   id: string;
@@ -12,13 +23,13 @@ export interface Product {
   features?: string[];
 }
 
-export const perfumesProducts: Product[] = [
+export const perfumeProducts: Product[] = [
   {
     id: 'pf1',
     name: 'Azzaro Wanted by Night',
     description: 'An intense and sensual fragrance for the confident man.',
-    price: 89.99,
-    image: perfumeImg,
+    price: 7500,
+    image: azzaroImg,
     category: 'Perfumes',
     badge: 'Popular',
     details:
@@ -35,8 +46,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf2',
     name: 'BVLGARI Man in Black',
     description: 'A daring blend of rum, leather, and spices for the modern gentleman.',
-    price: 119.99,
-    image: perfumeImg,
+    price: 9500,
+    image: bvlgariImg,
     category: 'Perfumes',
     badge: 'Luxury',
     details:
@@ -53,8 +64,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf3',
     name: 'BVLGARI Omnia Crystalline',
     description: 'A radiant floral fragrance that embodies elegance and grace.',
-    price: 99.99,
-    image: perfumeImg,
+    price: 8599,
+    image: omniaImg,
     category: 'Perfumes',
     details:
       'Omnia Crystalline captures purity with lotus flower, bamboo, and soft musk — perfect for everyday sophistication.',
@@ -70,8 +81,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf4',
     name: 'Davidoff Cool Water',
     description: 'A refreshing aquatic fragrance that defines timeless masculinity.',
-    price: 69.99,
-    image: perfumeImg,
+    price: 6999,
+    image: davidoffImg,
     category: 'Perfumes',
     badge: 'Classic',
     details:
@@ -88,8 +99,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf5',
     name: 'Davidoff Cool Water Woman',
     description: 'A crisp, ocean-inspired fragrance for the modern woman.',
-    price: 64.99,
-    image: perfumeImg,
+    price: 6499,
+    image: davidoffwomanImg,
     category: 'Perfumes',
     details:
       'Inspired by the serenity of the sea, this scent combines pineapple, lily, and sandalwood for a refreshing feminine touch.',
@@ -105,8 +116,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf6',
     name: 'Dunhill Icon',
     description: 'A sophisticated scent capturing timeless British elegance.',
-    price: 105.99,
-    image: perfumeImg,
+    price: 10599,
+    image: dunhillImg,
     category: 'Perfumes',
     badge: 'Signature',
     details:
@@ -123,8 +134,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf7',
     name: 'Giorgio Armani Acqua di Gio',
     description: 'A legendary fragrance symbolizing freedom and freshness.',
-    price: 119.99,
-    image: perfumeImg,
+    price: 11999,
+    image: giorgioImg,
     category: 'Perfumes',
     badge: 'Bestseller',
     details:
@@ -141,8 +152,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf8',
     name: 'Giorgio Armani Si',
     description: 'A bold and elegant feminine fragrance celebrating strength and grace.',
-    price: 139.99,
-    image: perfumeImg,
+    price: 13999,
+    image: giorgiosiImg,
     category: 'Perfumes',
     details:
       'Si by Giorgio Armani combines blackcurrant nectar, rose, and vanilla — sensual, powerful, and unmistakably modern.',
@@ -158,8 +169,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf9',
     name: 'Hermès Terre d’Hermès',
     description: 'A sophisticated woody fragrance rooted in nature and elegance.',
-    price: 145.99,
-    image: perfumeImg,
+    price: 14599,
+    image: hermesImg,
     category: 'Perfumes',
     badge: 'Elite',
     details:
@@ -176,8 +187,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf10',
     name: 'Issey Miyake L’Eau d’Issey Pour Homme',
     description: 'A timeless fragrance celebrating water, purity, and energy.',
-    price: 109.99,
-    image: perfumeImg,
+    price: 10999,
+    image: isseyImg,
     category: 'Perfumes',
     details:
       'Clean, balanced, and invigorating — this fragrance blends yuzu, sandalwood, and musk for a fresh, lasting impression.',
@@ -193,8 +204,8 @@ export const perfumesProducts: Product[] = [
     id: 'pf11',
     name: 'Paco Rabanne 1 Million',
     description: 'A bold, seductive fragrance for men who love to stand out.',
-    price: 129.99,
-    image: perfumeImg,
+    price: 12999,
+    image: pacoImg,
     category: 'Perfumes',
     badge: 'Iconic',
     details:

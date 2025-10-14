@@ -87,7 +87,7 @@ const Cart = () => {
                       <div className="flex-1 space-y-2">
                         <h3 className="font-semibold">{item.name}</h3>
                         <p className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                          ${item.price.toFixed(2)}
+                          Ksh{item.price.toFixed(2)}
                         </p>
                         <div className="flex items-center gap-2">
                           <Button
@@ -134,18 +134,18 @@ const Cart = () => {
                   <div className="space-y-2 py-4 border-y border-border">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span className="font-medium">${subtotal.toFixed(2)}</span>
+                      <span className="font-medium">Ksh{subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Shipping</span>
-                      <span className="font-medium">${shipping.toFixed(2)}</span>
+                      <span className="font-medium">Ksh{shipping.toFixed(2)}</span>
                     </div>
                   </div>
 
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                      ${total.toFixed(2)}
+                      Ksh{total.toFixed(2)}
                     </span>
                   </div>
 

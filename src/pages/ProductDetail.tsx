@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/Navbar';
 import { ShoppingCart, Heart, ArrowLeft, Check } from 'lucide-react';
-import { mockProducts } from '@/lib/mockData';
+import { ALL_PRODUCTS } from '@/lib/products';
 import { toast } from 'sonner';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = mockProducts.find(p => p.id === id);
+  const product = ALL_PRODUCTS.find(p => p.id === id);
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -78,17 +78,17 @@ const ProductDetail = () => {
               <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
               <h1 className="text-4xl font-bold mb-4">{product.name}</h1>
               <p className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent mb-6">
-                ${product.price.toFixed(2)}
+                Ksh{product.price.toFixed(2)}
               </p>
-              <p className="text-muted-foreground">{product.details || product.description}</p>
+              <p className="text-muted-foreground">{product.description}</p>
             </div>
 
             {/* Features */}
-            {product.features && (
+            {(product as any).features && (
               <div>
                 <h3 className="font-semibold mb-3">Key Features:</h3>
                 <ul className="space-y-2">
-                  {product.features.map((feature, index) => (
+                  {(product as any).features.map((feature: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{feature}</span>
@@ -173,7 +173,7 @@ const ProductDetail = () => {
         <div className="mt-24">
           <h2 className="text-2xl font-bold mb-8">You May Also Like</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {mockProducts
+            {ALL_PRODUCTS
               .filter(p => p.category === product.category && p.id !== product.id)
               .slice(0, 4)
               .map(relatedProduct => (
@@ -190,7 +190,7 @@ const ProductDetail = () => {
                       {relatedProduct.name}
                     </h3>
                     <p className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                      ${relatedProduct.price.toFixed(2)}
+                      Ksh{relatedProduct.price.toFixed(2)}
                     </p>
                   </div>
                 </Link>
@@ -200,6 +200,14 @@ const ProductDetail = () => {
       </div>
     </div>
   );
+};
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+    minimumFractionDigits: 2,
+  }).format(price);
 };
 
 export default ProductDetail;

@@ -85,7 +85,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
       <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <div>
           <p className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-            ${product.price.toFixed(2)}
+            Ksh {product.price.toFixed(2)}
           </p>
         </div>
         <Button
