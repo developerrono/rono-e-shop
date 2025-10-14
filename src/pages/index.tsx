@@ -2,21 +2,25 @@
 
 import { useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Hero from '@/components/Hero'; // Assuming you use this component
-import Navbar from '@/components/Navbar'; // Assuming you use this component
-import CategoryFilter from '@/components/CategoryFilter'; // Assuming this path
-import ProductCard from '@/components/ProductCard'; // Assuming this path
-import { ALL_PRODUCTS } from '@/lib/products.ts'; // <--- Import your product data
+import Hero from '@/components/Hero';
+import Navbar from '@/components/Navbar';
+import CategoryFilter from '@/components/CategoryFilter';
+import ProductCard from '@/components/ProductCard';
+import { ALL_PRODUCTS } from '@/lib/products.ts';
+import { useCart } from '@/hooks/useCart'; // <--- 1. IMPORT the useCart hook
 
 const Index = () => {
   // 1. READ CATEGORY FROM URL
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get('category');
+
+  // 2. USE the hook to get the cart functions
+  const { addToCart } = useCart(); 
   
   // Define all available categories (must match the Navbar/Product data)
   const categories = ['Trading Bots', 'Perfumes', 'Men\'s Pants', 'Laptops & Tech'];
 
-  // 2. IMPLEMENT CORE FILTERING LOGIC
+  // 3. IMPLEMENT CORE FILTERING LOGIC
   const filteredProducts = useMemo(() => {
     // If no category is selected, show all products
     if (!selectedCategory) {
@@ -26,7 +30,7 @@ const Index = () => {
     return ALL_PRODUCTS.filter((product) => product.category === selectedCategory);
   }, [selectedCategory]); // Re-filter only when selectedCategory changes
 
-  // 3. HANDLER FOR FILTER BUTTONS (passed to CategoryFilter)
+  // 4. HANDLER FOR FILTER BUTTONS (passed to CategoryFilter)
   const handleSelectCategory = useCallback((category: string | null) => {
     if (category) {
       setSearchParams({ category }); // Set URL: ?category=Perfumes
@@ -36,10 +40,11 @@ const Index = () => {
     // Note: Navbar links already do this via <Link to="...">
   }, [setSearchParams]);
   
-  // Placeholder function for adding to cart
+  // 5. UPDATE: Use the actual addToCart function from the context
   const handleAddToCart = (product) => {
-    console.log(`Adding ${product.name} to cart`);
-    // Your actual cart logic goes here
+    // This is the actual cart logic that updates the state
+    addToCart(product, 1); 
+    // The context handles the toast notification and state update
   };
 
   return (
@@ -64,7 +69,7 @@ const Index = () => {
               <ProductCard 
                 key={product.id ?? product.name} 
                 product={product}
-                onAddToCart={handleAddToCart}
+                onAddToCart={handleAddToCart} // This now calls the real cart logic
               />
             ))}
           </div>

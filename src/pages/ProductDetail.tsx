@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import { ShoppingCart, Heart, ArrowLeft, Check } from 'lucide-react';
 import { ALL_PRODUCTS } from '@/lib/products';
 import { toast } from 'sonner';
+import { useCart } from '@/hooks/useCart';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -201,6 +202,37 @@ const ProductDetail = () => {
     </div>
   );
 };
+interface ProductProps {
+    product: {
+        id: string;
+        name: string;
+        price: number;
+        image: string;
+    };
+}
+
+const ProductCard: React.FC<ProductProps> = ({ product }) => {
+    // Get the addToCart function from context
+    const { addToCart } = useCart();
+
+    const handleAddToCart = () => {
+        // Pass the product object to the context function
+        addToCart(product, 1); 
+    };
+
+    return (
+        // ... Card/Layout for your product
+        <div className="p-4 border rounded-lg">
+            <img src={product.image} alt={product.name} className="h-40 w-full object-cover mb-4" />
+            <h3 className="font-semibold">{product.name}</h3>
+            <p className="text-lg">Ksh{product.price.toFixed(2)}</p>
+            <Button onClick={handleAddToCart} className="w-full mt-3">
+                <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+            </Button>
+        </div>
+    );
+};
+// export default ProductCard;
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('en-KE', {

@@ -1,143 +1,127 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // <-- 1. Import useNavigate
+// Import the custom hook
+import { useCart } from '@/pages/CartContext'; // ADJUST PATH AS NEEDED
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
 import { ArrowLeft, Trash2, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+// Remove the CartItem interface here, it's defined in CartContext.tsx
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const navigate = useNavigate(); // <-- 2. Initialize useNavigate
+  
+  // Use the hook to get all cart data and functions
+  const { cartItems, updateQuantity, removeItem, cartCount } = useCart(); 
 
-  const updateQuantity = (id: string, delta: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-    toast.success('Item removed from cart');
-  };
-
+  // The rest of your logic remains the same, but now operates on the context state
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal > 0 ? 10 : 0;
   const total = subtotal + shipping;
 
   const handleCheckout = () => {
-    toast.success('Redirecting to checkout...', {
-      description: 'You will be able to choose M-Pesa or PayPal payment.',
-    });
+    // 3. CHANGE: Navigate to the actual checkout route
+    if (cartItems.length > 0) {
+      navigate('/checkout'); 
+    } else {
+      toast.error('Your cart is empty!', { description: 'Please add items before checking out.' });
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar cartItemsCount={cartItems.length} />
+      {/* Use cartCount from context for Navbar */}
+      <Navbar cartItemsCount={cartItems.length} /> 
       
-      <div className="container mx-auto px-4 py-8">
-        <Link to="/">
-          <Button variant="ghost" className="mb-6">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Continue Shopping
-          </Button>
-        </Link>
-
-        <h1 className="text-4xl font-bold mb-8">Shopping Cart</h1>
+      {/* ... (rest of your component rendering) ... */}
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-4xl font-extrabold mb-8 text-foreground">Shopping Cart ({cartCount})</h1>
 
         {cartItems.length === 0 ? (
-          <Card className="p-12 text-center animate-fade-in">
-            <CardContent className="space-y-4">
-              <div className="text-6xl mb-4">🛒</div>
-              <h2 className="text-2xl font-semibold">Your cart is empty</h2>
-              <p className="text-muted-foreground mb-6">
-                Add some products to get started
-              </p>
-              <Link to="/">
-                <Button size="lg" className="bg-gradient-to-r from-primary to-primary-glow">
-                  Start Shopping
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <div className="text-center py-20 bg-card rounded-xl shadow-lg">
+            <h2 className="text-2xl font-bold text-muted-foreground mb-4">Your cart is empty!</h2>
+            <Link to="/" className="text-primary hover:text-primary-glow font-semibold flex items-center justify-center">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Continue Shopping
+            </Link>
+          </div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Cart Items */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Column 1 & 2: Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
-                <Card key={item.id} className="animate-fade-in">
-                  <CardContent className="p-4">
-                    <div className="flex gap-4">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-24 h-24 object-cover rounded-lg"
-                      />
-                      <div className="flex-1 space-y-2">
-                        <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                          Ksh{item.price.toFixed(2)}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, -1)}
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <span className="w-12 text-center font-medium">
-                            {item.quantity}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, 1)}
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeItem(item.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </Button>
-                    </div>
-                  </CardContent>
+                <Card key={item.id} className="p-4 flex items-center space-x-4">
+                  {/* Item Image */}
+                  <div className="w-20 h-20 flex-shrink-0">
+                    <img 
+                      src={item.image} 
+                      alt={item.name} 
+                      className="w-full h-full object-cover rounded-md"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null; 
+                        e.currentTarget.src='https://placehold.co/80x80/6366f1/white?text=Product';
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Item Details */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold truncate">{item.name}</h3>
+                    <p className="text-primary font-bold">Ksh{item.price.toFixed(2)}</p>
+                  </div>
+                  
+                  {/* Quantity Controls */}
+                  <div className="flex items-center space-x-2 border rounded-lg p-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0"
+                      onClick={() => updateQuantity(item.id, -1)}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-6 text-center font-medium">{item.quantity}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0"
+                      onClick={() => updateQuantity(item.id, 1)}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {/* Remove Button */}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-destructive hover:text-destructive/80"
+                    onClick={() => removeItem(item.id)}
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </Button>
                 </Card>
               ))}
+              
+              <Link to="/" className="text-primary hover:text-primary-glow font-semibold flex items-center mt-4">
+                <ArrowLeft className="h-4 w-4 mr-2" /> Continue Shopping
+              </Link>
             </div>
 
-            {/* Order Summary */}
+            {/* Column 3: Summary */}
             <div className="lg:col-span-1">
-              <Card className="sticky top-24 animate-fade-in-up">
-                <CardContent className="p-6 space-y-4">
-                  <h2 className="text-xl font-bold">Order Summary</h2>
+              <Card>
+                <CardContent className="space-y-4 p-6">
+                  <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
                   
-                  <div className="space-y-2 py-4 border-y border-border">
+                  <div className="space-y-2 pb-4 border-b border-border">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-muted-foreground">Subtotal ({cartCount} items)</span>
                       <span className="font-medium">Ksh{subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Shipping</span>
+                      <span className="text-muted-foreground">Shipping (Flat Rate)</span>
                       <span className="font-medium">Ksh{shipping.toFixed(2)}</span>
                     </div>
                   </div>
@@ -152,7 +136,7 @@ const Cart = () => {
                   <Button
                     size="lg"
                     className="w-full bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity"
-                    onClick={handleCheckout}
+                    onClick={handleCheckout} // <-- Now navigates to /checkout
                   >
                     Proceed to Checkout
                   </Button>
