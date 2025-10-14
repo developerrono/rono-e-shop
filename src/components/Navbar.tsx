@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, X, Sun, Moon, User } from 'lucide-react';
+import { ShoppingCart, Search, Menu, X, Sun, Moon, User, History, LogOut, ArrowLeftRight } from 'lucide-react'; // Added History, LogOut, ArrowLeftRight (for transactions)
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTheme } from 'next-themes';
+
+// Import Dropdown components
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface NavbarProps {
   cartItemsCount?: number;
@@ -14,6 +24,10 @@ const Navbar = ({ cartItemsCount = 0 }: NavbarProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
+  
+  // Dummy user for demonstration (replace with real auth state)
+  const isAuthenticated = true;
+  const userName = "Customer";
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +37,19 @@ const Navbar = ({ cartItemsCount = 0 }: NavbarProps) => {
     }
   };
 
+  const handleLogout = () => {
+    // Implement actual logout logic here
+    console.log("User logged out");
+    navigate('/');
+  };
+
   const categories = ['Trading Bots', 'Perfumes', 'Men\'s Pants', 'Laptops & Tech'];
+
+  const navLinks = [
+    { name: 'Profile', path: '/profile', icon: User },
+    { name: 'Orders & Transactions', path: '/transactions', icon: History },
+    { name: 'Logout', action: handleLogout, icon: LogOut, isDestructive: true },
+  ];
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -66,8 +92,10 @@ const Navbar = ({ cartItemsCount = 0 }: NavbarProps) => {
             ))}
           </div>
 
-          {/* Right Actions */}
+          {/* Right Actions (Cart, Profile Dropdown, Theme Toggle) */}
           <div className="flex items-center space-x-2">
+            
+            {/* 1. Theme Toggle */}
             <Button
               variant="ghost"
               size="icon"
@@ -77,10 +105,46 @@ const Navbar = ({ cartItemsCount = 0 }: NavbarProps) => {
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <User className="h-5 w-5" />
-            </Button>
+            {/* 2. Profile Dropdown (Replaced the static Button) */}
+            {isAuthenticated && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hidden md:flex">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel>
+                    <div className="font-bold">Hello, {userName}</div>
+                    <div className="text-xs text-muted-foreground">Manage your account</div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  
+                  <Link to="/profile">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile Settings</span>
+                    </DropdownMenuItem>
+                  </Link>
 
+                  <Link to="/transactions">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <History className="mr-2 h-4 w-4" />
+                      <span>Order History</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+
+            {/* 3. Cart Link */}
             <Link to="/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
@@ -92,6 +156,7 @@ const Navbar = ({ cartItemsCount = 0 }: NavbarProps) => {
               </Button>
             </Link>
 
+            {/* 4. Mobile Menu Toggle */}
             <Button
               variant="ghost"
               size="icon"
@@ -131,6 +196,25 @@ const Navbar = ({ cartItemsCount = 0 }: NavbarProps) => {
                   {category}
                 </Link>
               ))}
+              
+              {/* Profile Links for Mobile */}
+              <DropdownMenuSeparator className="my-2" />
+
+              <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>Profile Settings</span>
+                </Button>
+              </Link>
+              
+              <Link to="/transactions" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start flex items-center gap-2">
+                  <History className="h-4 w-4" />
+                  <span>Order History</span>
+                </Button>
+              </Link>
+
+              {/* Theme Toggle and Logout for Mobile */}
               <div className="flex items-center justify-between px-2 py-1 border-t border-border pt-3">
                 <Button
                   variant="ghost"
@@ -150,9 +234,9 @@ const Navbar = ({ cartItemsCount = 0 }: NavbarProps) => {
                     </>
                   )}
                 </Button>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span>Profile</span>
+                <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center gap-2 text-destructive hover:bg-destructive/10">
+                  <LogOut className="h-4 w-4" />
+                  <span>Log Out</span>
                 </Button>
               </div>
             </div>
