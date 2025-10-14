@@ -1,245 +1,215 @@
-import { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { useParams, Navigate, Link } from 'react-router-dom';
+import Navbar from '../components/Navbar'; // FIX: Changed to relative path to resolve alias issue
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Navbar from '@/components/Navbar';
-import { ShoppingCart, Heart, ArrowLeft, Check } from 'lucide-react';
-import { ALL_PRODUCTS } from '@/lib/products';
+import { Card, CardContent } from '@/components/ui/card';
+import { Star, Truck, ShieldCheck, Plus, Minus } from 'lucide-react';
+import { useCart } from '@/pages/CartContext'; // FIX: Changed to alias path for robustness
 import { toast } from 'sonner';
-import { useCart } from '@/hooks/useCart';
+
+// --- MOCK DATA AND TYPES (Should be imported from '@/lib/products.ts' in a real app) ---
+
+// Define the core product interface used across the app
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  description: string;
+  stock: number;
+  rating: number;
+  reviews: number;
+}
+
+// Mock ALL_PRODUCTS data for the component to be self-contained and runnable
+const ALL_PRODUCTS: Product[] = [
+    {
+      id: "bot-001",
+      name: "Quantum Algo Trader",
+      price: 299.99,
+      image: "https://placehold.co/400x400/1e293b/ffffff?text=Trading+Bot",
+      category: "Trading Bots",
+      description: "A high-frequency trading bot powered by advanced machine learning models for optimal market entry and exit. Requires minimal configuration.",
+      stock: 50,
+      rating: 4.8,
+      reviews: 124
+    },
+    {
+      id: "perfume-005",
+      name: "Midnight Scent",
+      price: 65.00,
+      image: "https://placehold.co/400x400/505050/ffffff?text=Midnight+Perfume",
+      category: "Perfumes",
+      description: "An elegant and mysterious blend of dark amber, vanilla, and night-blooming jasmine, perfect for evening wear.",
+      stock: 300,
+      rating: 4.2,
+      reviews: 88
+    },
+    // Add more mock products if needed for testing, but these two cover the logic
+];
+
+// --- END MOCK DATA ---
+
 
 const ProductDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const product = ALL_PRODUCTS.find(p => p.id === id);
-  const [isLiked, setIsLiked] = useState(false);
+  const { id } = useParams<{ id: string }>(); // Get the ID from the URL
+  const { cartItems, addToCart } = useCart(); // Get cart functions and state
   const [quantity, setQuantity] = useState(1);
 
+  // Find the product using the ID from the URL
+  const product = useMemo(() => {
+    return ALL_PRODUCTS.find(p => p.id === id);
+  }, [id]);
+
+  // Handle case where product is not found
   if (!product) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold mb-4">Product not found</h1>
-          <Link to="/">
-            <Button>Back to Shop</Button>
-          </Link>
-        </div>
-      </div>
-    );
+    // Navigate to a 404 page or index if the product ID is invalid
+    return <Navigate to="/404" replace />;
   }
 
-  const handleAddToCart = () => {
-    toast.success('Added to cart', {
-      description: `${quantity}x ${product.name} has been added to your cart.`,
+  const handleQuantityChange = (delta: number) => {
+    setQuantity(prev => {
+      const newQty = prev + delta;
+      // Prevent quantity from going below 1 or exceeding stock
+      if (newQty < 1) return 1;
+      if (newQty > product.stock) {
+        toast.warning(`Maximum stock is ${product.stock}.`);
+        return product.stock;
+      }
+      return newQty;
     });
   };
 
-  const handleBuyNow = () => {
-    toast.success('Redirecting to checkout...');
-    setTimeout(() => navigate('/cart'), 1000);
+  const handleAddToCart = () => {
+    // The product object structure is compatible with the CartItem interface (which extends Product)
+    addToCart(product, quantity);
   };
+
+  const currentCartCount = cartItems.reduce((acc, item) => item.id === product.id ? acc + item.quantity : acc, 0);
+  const maxPurchaseLimit = product.stock - currentCartCount;
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <div className="container mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Link to="/">
-          <Button variant="ghost" className="mb-6">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shop
-          </Button>
-        </Link>
+      {/* Assuming Navbar automatically gets cart count from context if props are missing, 
+          but best practice is to pass it if available. */}
+      <Navbar cartItemsCount={cartItems.length} /> 
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Product Image */}
-          <div className="space-y-4 animate-fade-in">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted">
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
+          {/* Breadcrumb/Back link */}
+          <Link to="/" className="text-sm text-primary hover:text-primary-glow transition-colors mb-6 inline-flex items-center">
+            &larr; Back to Products
+          </Link>
+
+          {/* Product Detail Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-4">
+            {/* Left Column: Image */}
+            <div className="lg:sticky lg:top-24 h-fit">
               <img
                 src={product.image}
                 alt={product.name}
-                className="object-cover w-full h-full"
+                className="w-full h-auto object-cover rounded-xl shadow-2xl transition-transform hover:scale-[1.01] duration-300"
               />
-              {product.badge && (
-                <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                  {product.badge}
-                </Badge>
-              )}
             </div>
-            <p className="text-sm text-muted-foreground text-center">
-              Click and drag to view 360° (Coming soon)
-            </p>
-          </div>
 
-          {/* Product Details */}
-          <div className="space-y-6 animate-fade-in-up">
+            {/* Right Column: Details and CTA */}
             <div>
-              <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
-              <h1 className="text-4xl font-bold mb-4">{product.name}</h1>
-              <p className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent mb-6">
+              <h1 className="text-4xl font-extrabold mb-2">{product.name}</h1>
+              <p className="text-lg text-muted-foreground mb-4 capitalize">{product.category}</p>
+
+              {/* Rating and Reviews */}
+              <div className="flex items-center space-x-2 mb-6">
+                <div className="flex text-yellow-500">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`h-5 w-5 ${i < Math.floor(product.rating) ? 'fill-yellow-500' : 'fill-transparent stroke-yellow-500'}`} />
+                  ))}
+                </div>
+                <span className="text-sm font-medium">
+                  {product.rating.toFixed(1)}/5.0 ({product.reviews} reviews)
+                </span>
+              </div>
+
+              {/* Price */}
+              <p className="text-5xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent mb-6">
                 Ksh{product.price.toFixed(2)}
               </p>
-              <p className="text-muted-foreground">{product.description}</p>
-            </div>
 
-            {/* Features */}
-            {(product as any).features && (
-              <div>
-                <h3 className="font-semibold mb-3">Key Features:</h3>
-                <ul className="space-y-2">
-                  {(product as any).features.map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+              {/* Description */}
+              <Card className="mb-8">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-3">Product Description</h3>
+                  <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {product.description}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Quantity Selector */}
+              <div className="flex items-center space-x-4 mb-8">
+                <h3 className="text-lg font-semibold">Quantity:</h3>
+                <div className="flex items-center border border-border rounded-lg overflow-hidden">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-12 text-center text-lg font-medium">{quantity}</span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleQuantityChange(1)}
+                    // Disable if quantity is already at stock limit or max purchase limit
+                    disabled={quantity >= product.stock || maxPurchaseLimit <= 0 || quantity >= maxPurchaseLimit}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {product.stock > 0 ? (
+                  <span className={`text-sm ${product.stock < 10 ? 'text-orange-500' : 'text-green-600'}`}>
+                    {product.stock} in stock
+                  </span>
+                ) : (
+                  <span className="text-sm text-destructive">Out of Stock</span>
+                )}
               </div>
-            )}
 
-            {/* Quantity Selector */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium">Quantity:</span>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                >
-                  -
-                </Button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(quantity + 1)}
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Add to Cart Button */}
               <Button
                 size="lg"
-                onClick={handleBuyNow}
-                className="flex-1 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity"
-              >
-                Buy Now
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
+                className="w-full text-lg h-14 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity disabled:opacity-50"
                 onClick={handleAddToCart}
-                className="flex-1"
+                disabled={product.stock <= 0 || quantity > maxPurchaseLimit}
               >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
+                Add {quantity} {quantity > 1 ? 'items' : 'item'} to Cart - Ksh{(product.price * quantity).toFixed(2)}
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => {
-                  setIsLiked(!isLiked);
-                  toast.success(isLiked ? 'Removed from favorites' : 'Added to favorites');
-                }}
-              >
-                <Heart
-                  className={`h-5 w-5 ${
-                    isLiked ? 'fill-primary text-primary' : ''
-                  }`}
-                />
-              </Button>
-            </div>
+              {maxPurchaseLimit > 0 && quantity > maxPurchaseLimit && (
+                 <p className="text-sm text-destructive mt-2 text-center">
+                    You already have items in your cart. You can only add {maxPurchaseLimit} more.
+                 </p>
+              )}
 
-            {/* Payment Info */}
-            <div className="border border-border rounded-lg p-4 bg-muted/50">
-              <h4 className="font-semibold mb-2">Secure Payment Options</h4>
-              <div className="flex gap-3">
-                <div className="px-4 py-2 bg-background rounded border border-border text-sm font-medium">
-                  M-Pesa
+
+              {/* Additional Information */}
+              <div className="mt-8 space-y-4 border-t border-border pt-6">
+                <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
+                  <Truck className="h-5 w-5 text-primary" />
+                  <p>Free Shipping & Returns on all orders.</p>
                 </div>
-                <div className="px-4 py-2 bg-background rounded border border-border text-sm font-medium">
-                  PayPal
+                <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
+                  <ShieldCheck className="h-5 w-5 text-primary" />
+                  <p>Secure payment via M-Pesa & PayPal.</p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Related Products Section */}
-        <div className="mt-24">
-          <h2 className="text-2xl font-bold mb-8">You May Also Like</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {ALL_PRODUCTS
-              .filter(p => p.category === product.category && p.id !== product.id)
-              .slice(0, 4)
-              .map(relatedProduct => (
-                <Link key={relatedProduct.id} to={`/product/${relatedProduct.id}`}>
-                  <div className="group cursor-pointer">
-                    <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-muted">
-                      <img
-                        src={relatedProduct.image}
-                        alt={relatedProduct.name}
-                        className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                    <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">
-                      {relatedProduct.name}
-                    </h3>
-                    <p className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                      Ksh{relatedProduct.price.toFixed(2)}
-                    </p>
-                  </div>
-                </Link>
-              ))}
           </div>
         </div>
       </div>
     </div>
   );
-};
-interface ProductProps {
-    product: {
-        id: string;
-        name: string;
-        price: number;
-        image: string;
-    };
-}
-
-const ProductCard: React.FC<ProductProps> = ({ product }) => {
-    // Get the addToCart function from context
-    const { addToCart } = useCart();
-
-    const handleAddToCart = () => {
-        // Pass the product object to the context function
-        addToCart(product, 1); 
-    };
-
-    return (
-        // ... Card/Layout for your product
-        <div className="p-4 border rounded-lg">
-            <img src={product.image} alt={product.name} className="h-40 w-full object-cover mb-4" />
-            <h3 className="font-semibold">{product.name}</h3>
-            <p className="text-lg">Ksh{product.price.toFixed(2)}</p>
-            <Button onClick={handleAddToCart} className="w-full mt-3">
-                <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-            </Button>
-        </div>
-    );
-};
-// export default ProductCard;
-
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('en-KE', {
-    style: 'currency',
-    currency: 'KES',
-    minimumFractionDigits: 2,
-  }).format(price);
 };
 
 export default ProductDetail;
