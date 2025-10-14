@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
-import Navbar from '../components/Navbar'; // FIX: Changed to relative path to resolve alias issue
+import Navbar from '@/components/Navbar'; // FIX: Reverted to alias path, which is standard across other files (e.g., index.tsx, Cart.tsx)
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, Plus, Minus } from 'lucide-react';
-import { useCart } from '@/pages/CartContext'; // FIX: Changed to alias path for robustness
+import { useCart } from './CartContext'; // FIX: Corrected to the simple relative path for a sibling file
 import { toast } from 'sonner';
 
 // --- MOCK DATA AND TYPES (Should be imported from '@/lib/products.ts' in a real app) ---
@@ -179,7 +179,7 @@ const ProductDetail = () => {
 
               {/* Add to Cart Button */}
               <Button
-                size="lg"
+                size="xl"
                 className="w-full text-lg h-14 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity disabled:opacity-50"
                 onClick={handleAddToCart}
                 disabled={product.stock <= 0 || quantity > maxPurchaseLimit}
