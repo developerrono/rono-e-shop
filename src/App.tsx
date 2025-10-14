@@ -7,7 +7,7 @@ import { ThemeProvider } from "next-themes";
 // FIXED PATHS: Explicitly adding the .tsx extension to all local file imports to resolve persistent "Could not resolve" errors.
 import { CartProvider } from "./pages/CartContext.tsx";
 import { AuthProvider } from "./pages/AuthContext.tsx";
-import Index from "./pages/Index.tsx";
+import Index from "@/pages/Index.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import Cart from "./pages/Cart.tsx";
 import Checkout from "./pages/CheckoutPage.tsx";
