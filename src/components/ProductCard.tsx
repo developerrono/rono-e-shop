@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/UI/button';
+import { Card, CardContent, CardFooter } from '@/components/UI/card';
+import { Badge } from '@/components/UI/badge';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 

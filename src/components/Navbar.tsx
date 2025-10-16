@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X, Sun, Moon, User, History, LogOut, ArrowLeftRight } from 'lucide-react'; // Added History, LogOut, ArrowLeftRight (for transactions)
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/UI/button';
+import { Input } from '@/components/UI/input';
 import { useTheme } from 'next-themes';
 
 // Import Dropdown components
@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/UI/dropdown-menu';
 
 interface NavbarProps {
   cartItemsCount?: number;
