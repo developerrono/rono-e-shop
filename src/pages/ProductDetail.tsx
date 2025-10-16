@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar'; // FIX: Reverted to alias path, which is standard across other files (e.g., index.tsx, Cart.tsx)
 import { Button } from '@/components/UI/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/UI/card';
 import { Star, Truck, ShieldCheck, Plus, Minus } from 'lucide-react';
 import { useCart } from './CartContext'; // FIX: Corrected to the simple relative path for a sibling file
 import { toast } from 'sonner';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/UI/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/UI/card';
 import { Loader2, DollarSign, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 

@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; // <-- ADDED: Needed for navigation link when cart is empty
 // Correct the useCart import to be named, assuming it's exported from CartContext
 import { useCart } from './CartContext'; 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // <-- ADDED: Needed for shipping details inputs
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
+import { Button } from '@/components/UI/button';
+import { Input } from '@/components/UI/input'; // <-- ADDED: Needed for shipping details inputs
 import Mpesa from './mpesa'; // <-- Corrected import path (assuming mpesa.tsx is in the same directory)
 import Paypal from './paypal'; // <-- Corrected import path (assuming paypal.tsx is in the same directory)
 import Navbar from '@/components/Navbar';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'; // Corrected path to ui
-import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/UI/radio-group'; // Corrected path to ui
+import { Label } from '@/components/UI/label';
 import { toast } from 'sonner';
 
 // Ensure Mpesa.tsx and Paypal.tsx are placed in src/pages/ or adjust imports

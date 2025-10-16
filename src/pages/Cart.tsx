@@ -2,8 +2,8 @@ import { Link, useNavigate } from 'react-router-dom'; // <-- 1. Import useNaviga
 // Import the custom hook
 import { useCart } from '@/pages/CartContext'; // ADJUST PATH AS NEEDED
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/UI/button';
+import { Card, CardContent } from '@/components/UI/card';
 import Navbar from '@/components/Navbar';
 import { ArrowLeft, Trash2, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
